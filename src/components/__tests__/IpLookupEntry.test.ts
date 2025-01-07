@@ -41,7 +41,15 @@ describe('IpLookupEntry', () => {
   })
 
   it('shows loading state during IP lookup', async () => {
-    vi.mocked(getIpDetails).mockImplementation(() => new Promise(resolve => setTimeout(resolve, 100)))
+    vi.mocked(getIpDetails).mockImplementation(() => 
+      new Promise(resolve => setTimeout(() => resolve({
+        ip: '8.8.8.8',
+        countryName: '',
+        countryCode: '',
+        timezone: '',
+        error: ''
+      }), 100))
+    )
     
     const wrapper = mount(IpLookupEntry, {
       props: {
@@ -53,6 +61,8 @@ describe('IpLookupEntry', () => {
     await ipInput.vm.$emit('blur')
 
     expect(wrapper.findComponent({ name: 'LoadingSpinner' }).exists()).toBe(true)
+
+    await wrapper.vm.$nextTick()
   })
 
   it('handles error state', async () => {
